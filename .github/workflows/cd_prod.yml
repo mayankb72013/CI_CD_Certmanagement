@@ -7,7 +7,7 @@ on:
 jobs:
   redeploy_everything:
     runs-on: ubuntu-latest
-    name: Deploying everything to the staging cluster
+    name: Deploying everything to the Prod cluster
 
     steps:
       - name: Check SSH key
