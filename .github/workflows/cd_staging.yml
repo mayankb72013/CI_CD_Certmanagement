@@ -10,23 +10,14 @@ jobs:
       steps:
        - name: create SSH key
          run: |
-           printf "%s" "${{ secrets.SSH_PRIVATE_KEY_AWS }}" > ssh_key
+           echo "${{ secrets.SSH_PRIVATE_KEY_AWS }}" > ssh_key
            chmod 600 ssh_key
 
        - name: SSH and deploy
          run: | 
            ssh -o StrictHostKeyChecking=no -i ssh_key ubuntu@13.60.166.224 << 'EOF'
-           set -e  # exit on first error
-              echo "✅ Connected to server"
-              cd CI_CD_Certmanagement/ || { echo "❌ Folder not found"; exit 1; }
-              echo "✅ Pulled into repo"
-              git pull
-              echo "✅ Installing dependencies..."
-              which pnpm || { echo "❌ pnpm not found"; exit 127; }
-              pnpm install
-              echo "✅ Building..."
-              pnpm run build
-              echo "✅ Restarting server..."
-              which pm2 || { echo "❌ pm2 not found"; exit 127; }
-              pm2 restart all
-            EOF
+            cd CI_CD_Certmanagement/ && git pull
+            pnpm install
+            pnpm run build
+            pm2 restart all
+           EOF
