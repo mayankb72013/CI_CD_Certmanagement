@@ -23,7 +23,7 @@ jobs:
             export PNPM_HOME="$HOME/.local/share/pnpm"
             export PATH="$PNPM_HOME:$PATH"
             cd CI_CD_Certmanagement/ && git pull
-            /usr/local/bin/pnpm install
-            /usr/local/bin/pnpm run build
+            pnpm install
+            pnpm run build
             pm2 restart all
            EOF
