@@ -1,18 +1,45 @@
-name: Deploy to staging
-on: 
-   push: 
-      branches: [main]
+name: Deploy to Prod
+
+on:
+  push:
+    branches: [main]
 
 jobs:
-   redeploy_everything:
-     runs-on: ubuntu-latest
-     name: Deploying everything to the staging cluster
-     steps:
-        - run: |
-            echo ${{ secrets.SSH_PRIVATE_KEY_AWS }} &> ~/ssh_key
-            ssh -i ~/ssh_key ubuntu@13.60.166.224
-            cd CI_CD_Certmanagement/ && git pull
+  redeploy_everything:
+    runs-on: ubuntu-latest
+    name: Deploying everything to the staging cluster
+
+    steps:
+      - name: Check SSH key
+        run: |
+          if [ -z "${{ secrets.SSH_PRIVATE_KEY_AWS }}" ]; then
+            echo "❌ Secret SSH_PRIVATE_KEY_AWS is empty!"
+            exit 1
+          fi
+
+      - name: Create SSH key file
+        run: |
+          printf "%s" "${{ secrets.SSH_PRIVATE_KEY_AWS }}" > ssh_key
+          chmod 600 ssh_key
+
+      - name: SSH and deploy to staging
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ssh_key ubuntu@13.51.158.87 << 'EOF'
+            set -e
+
+            echo "✅ SSH connected"
+
+            # Load NVM and use Node
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm use 22
+
+            echo "✅ Node version: \$(node -v)"
+            echo "✅ pnpm version: \$(pnpm -v)"
+
+            cd CI_CD_Certmanagement/
+            git pull
             pnpm install
             pnpm run build
             pm2 restart all
-           
+          EOF
