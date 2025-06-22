@@ -10,8 +10,9 @@ jobs:
       steps:
        - name: create SSH key
          run: |
-           echo "${{ secrets.SSH_PRIVATE_KEY_AWS }}" > ~/ssh_key
-           chmod 600 ~/ssh_key
+           [ -z "${{ secrets.SSH_PRIVATE_KEY_AWS }}" ] && echo "❌ SSH key secret is empty!" && exit 1
+            printf "%s" "${{ secrets.SSH_PRIVATE_KEY_AWS }}" > ssh_key
+            chmod 600 ssh_key
 
        - name: SSH and deploy
          run: | 
