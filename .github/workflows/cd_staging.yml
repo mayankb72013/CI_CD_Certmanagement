@@ -17,6 +17,11 @@ jobs:
        - name: SSH and deploy
          run: | 
            ssh -o StrictHostKeyChecking=no -i ssh_key ubuntu@13.60.166.224 << 'EOF'
+            set -e
+
+            # Fix for non-interactive shell (make pnpm and pm2 available)
+            export PNPM_HOME="$HOME/.local/share/pnpm"
+            export PATH="$PNPM_HOME:$PATH"
             cd CI_CD_Certmanagement/ && git pull
             pnpm install
             pnpm run build
