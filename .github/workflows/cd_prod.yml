@@ -38,7 +38,7 @@ jobs:
             echo "✅ pnpm version: \$(pnpm -v)"
 
             cd CI_CD_Certmanagement/
-            git pull
+            git pull --no-rebase
             pnpm install
             pnpm run build
             pm2 restart all
