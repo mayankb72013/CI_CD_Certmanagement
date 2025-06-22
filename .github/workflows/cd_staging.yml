@@ -1,0 +1,24 @@
+name: Deploy to staging
+on:
+  push:
+    branches: [main]
+  
+jobs:
+   redeploy_everything:
+      runs_on: ubuntu_latest
+      name: Deploying everything to the staging cluster
+      steps:
+       - name: create SSH key
+         run: |
+           echo "${{ secrets.SSH_PRIVATE_KEY_AWS }}" > ssh_key
+           chmod 600 ssh_key
+
+       - name: SSH and deploy
+         run: | 
+           ssh -o StrictHostKeyChecking=no -i ssh_key ubuntu@13.60.166.224 << 'EOF'
+            cd CI_CD_Certmanagement/
+            git pull
+            pnpm install
+            pnpm run build
+            pm2 restart all
+           EOF
