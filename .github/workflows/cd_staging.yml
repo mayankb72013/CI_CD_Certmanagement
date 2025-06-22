@@ -11,12 +11,12 @@ jobs:
        - name: create SSH key
          run: |
            [ -z "${{ secrets.SSH_PRIVATE_KEY_AWS }}" ] && echo "❌ SSH key secret is empty!" && exit 1
-            printf "%s" "${{ secrets.SSH_PRIVATE_KEY_AWS }}" > ~/ssh_key
-            chmod 600 ~/ssh_key
+            printf "%s" "${{ secrets.SSH_PRIVATE_KEY_AWS }}" > ssh_key
+            chmod 600 ssh_key
 
        - name: SSH and deploy
          run: | 
-           ssh -o StrictHostKeyChecking=no -i ~/ssh_key ubuntu@13.60.166.224 << 'EOF'
+           ssh -o StrictHostKeyChecking=no -i ssh_key ubuntu@13.60.166.224 << 'EOF'
             cd CI_CD_Certmanagement/ && git pull
             pnpm install
             pnpm run build
