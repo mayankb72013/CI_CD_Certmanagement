@@ -32,7 +32,7 @@ app.get("/user",async function (req,res) {
     const user = await client.user.findFirst()
 
     res.json({
-        msg: "This was the latest user created",
+        msg: "This was the latest user cr so it has successedeated",
         user: user
     })
 })
